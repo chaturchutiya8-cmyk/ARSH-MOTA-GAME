@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ARSH MOTA Jump Game</title>
+
+<style>
+body {
+  text-align:center;
+  background:white;
+  font-family:Arial;
+  overflow:hidden;
+}
+
+/* Background Big Name */
+#bgtext {
+  position:fixed;
+  top:40%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-size:50px;
+  color:rgba(0,0,0,0.1);
+  font-weight:bold;
+  z-index:-1;
+}
+
+#game {
+  width:350px;
+  height:200px;
+  border:3px solid black;
+  margin:auto;
+  position:relative;
+  background:white;
+  overflow:hidden;
+}
+
+#player {
+  width:60px;
+  position:absolute;
+  bottom:0;
+  left:20px;
+}
+
+#obstacle {
+  width:25px;
+  height:60px;
+  background:black;
+  position:absolute;
+  bottom:0;
+  right:-30px;
+}
+
+#score {
+  font-size:20px;
+  font-weight:bold;
+}
+
+#btn {
+  padding:10px 20px;
+  font-size:16px;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="bgtext">ARSH MOTA</div>
+
+<h2>🔥 ARSH MOTA Jump Game</h2>
+<div id="score">Score: 0</div>
+
+<div id="game">
+  <img id="player" src="happy.png">
+  <div id="obstacle"></div>
+</div>
+
+<button id="btn" onclick="location.reload()">Restart Game</button>
+
+<!-- Background Music -->
+<audio id="bgmusic" src="song.mp3" loop></audio>
+
+<script>
+let player = document.getElementById("player");
+let obstacle = document.getElementById("obstacle");
+let scoreText = document.getElementById("score");
+let music = document.getElementById("bgmusic");
+let restartBtn = document.getElementById("btn");
+
+let jumping = false;
+let score = 0;
+let gameOver = false;
+
+// Start music on first click
+document.addEventListener("click", function(){
+  music.play();
+});
+
+// Jump function
+document.addEventListener("click", jump);
+
+function jump(){
+  if(jumping || gameOver) return;
+  jumping = true;
+  let height = 0;
+
+  let up = setInterval(()=>{
+    if(height >= 100){
+      clearInterval(up);
+      let down = setInterval(()=>{
+        if(height <= 0){
+          clearInterval(down);
+          jumping = false;
+        }
+        height -= 5;
+        player.style.bottom = height + "px";
+      },20);
+    }
+    height += 5;
+    player.style.bottom = height + "px";
+  },20);
+}
+
+// Obstacle movement
+setInterval(()=>{
+  if(gameOver) return;
+
+  let obsRight = parseInt(getComputedStyle(obstacle).right);
+  obstacle.style.right = (obsRight + 5) + "px";
+
+  // Reset obstacle + increase score
+  if(obsRight > 380){
+    obstacle.style.right = "-30px";
+    score++;
+    scoreText.innerHTML = "Score: " + score;
+  }
+
+  // Collision detection
+  let playerBottom = parseInt(player.style.bottom);
+  if(obsRight > 300 && obsRight < 340 && playerBottom < 50){
+    gameOver = true;
+
+    // Change face to sad
+    player.src = "sad.png";
+
+    // Stop music
+    music.pause();
+
+    // Show restart button
+    restartBtn.style.display = "block";
+
+    alert("💀 GAME OVER\nARSH MOTA Score = " + score);
+  }
+
+},30);
+</script>
+
+</body>
+</html>
